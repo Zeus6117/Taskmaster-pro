@@ -1,3 +1,7 @@
 ul.list-group {
   min-height: 130px;
 }
+
+p {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
