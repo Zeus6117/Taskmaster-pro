@@ -1,14 +1,11 @@
 var tasks = {};
 
 var createTask = function(taskText, taskDate, taskList) {
-
   // create elements that make up a task item
   var taskLi = $("<li>").addClass("list-group-item");
-
   var taskSpan = $("<span>")
     .addClass("badge badge-primary badge-pill")
     .text(taskDate);
-
   var taskP = $("<p>")
     .addClass("m-1")
     .text(taskText);
@@ -36,7 +33,6 @@ var loadTasks = function() {
   // loop over object properties
   $.each(tasks, function(list, arr) {
     console.log(list, arr);
-
     // then loop over sub-array
     arr.forEach(function(task) {
       createTask(task.text, task.date, list);
@@ -101,6 +97,24 @@ $(".card .list-group").sortable({
   }
 });
 
+// trash icon can be dropped onto
+$("#trash").droppable({
+  accept: ".card .list-group-item",
+  tolerance: "touch",
+  drop: function(event, ui) {
+    // remove dragged element from the dom
+    ui.draggable.remove();
+
+  },
+  over: function(event, ui) {
+    console.log(ui);
+  },
+  out: function(event, ui) {
+    console.log(ui);
+  }
+});
+
+
 // modal was triggered
 $("#task-form-modal").on("show.bs.modal", function() {
   // clear values
@@ -137,16 +151,13 @@ $("#task-form-modal .btn-primary").click(function() {
 
 // task text was clicked
 $(".list-group").on("click", "p", function() {
-
   // get current text of p element
   var text = $(this)
     .text()
     .trim();
 
   // replace p element with a new textarea
-  var textInput = $("<textarea>")
-    .addClass("form-control")
-    .val(text);
+  var textInput = $("<textarea>").addClass("form-control").val(text);
   $(this).replaceWith(textInput);
 
   // auto focus new element
@@ -155,7 +166,6 @@ $(".list-group").on("click", "p", function() {
 
 // editable field was un-focused
 $(".list-group").on("blur", "textarea", function() {
-
   // get current value of textarea
   var text = $(this).val();
 
@@ -164,16 +174,11 @@ $(".list-group").on("blur", "textarea", function() {
     .closest(".list-group")
     .attr("id")
     .replace("list-", "");
-
-    //get the task's position in the list of other li elements
   var index = $(this)
     .closest(".list-group-item")
     .index();
 
-    //tasks is an object.
-    //tasks[status] returns an array (e.g., toDo)
-    //tasks[status][index] returns the object at the given index in the array.
-    //tasks[status][index].text returns the text property of the object at the given index
+  // update task in array and re-save to localstorage
   tasks[status][index].text = text;
   saveTasks();
 
@@ -188,7 +193,6 @@ $(".list-group").on("blur", "textarea", function() {
 
 // due date was clicked
 $(".list-group").on("click", "span", function() {
-
   // get current text
   var date = $(this)
     .text()
@@ -199,8 +203,6 @@ $(".list-group").on("click", "span", function() {
     .attr("type", "text")
     .addClass("form-control")
     .val(date);
-
-    //swap out elements
   $(this).replaceWith(dateInput);
 
   // automatically bring up the calendar
@@ -208,18 +210,14 @@ $(".list-group").on("click", "span", function() {
 });
 
 // value of due date was changed
-$(".list-group").on("blur", "input[type='text']", function() {
-
-  //get current text
+$(".list-group").on("change", "input[type='text']", function() {
   var date = $(this).val();
 
-  // get status type and position in the list///get the parent ul's id attribute
+  // get status type and position in the list
   var status = $(this)
     .closest(".list-group")
     .attr("id")
     .replace("list-", "");
-
-    //get the task's position in the list of other li elements
   var index = $(this)
     .closest(".list-group-item")
     .index();
@@ -228,13 +226,11 @@ $(".list-group").on("blur", "input[type='text']", function() {
   tasks[status][index].date = date;
   saveTasks();
 
-  // recreate span and insert in place of input element(bootstrap classes)
+  // recreate span and insert in place of input element
   var taskSpan = $("<span>")
     .addClass("badge badge-primary badge-pill")
     .text(date);
-
-    //replace input with the span element
-  $(this).replaceWith(taskSpan);
+    $(this).replaceWith(taskSpan);
 });
 
 // remove all tasks
@@ -243,9 +239,9 @@ $("#remove-tasks").on("click", function() {
     tasks[key].length = 0;
     $("#list-" + key).empty();
   }
+  console.log(tasks);
   saveTasks();
 });
 
-
-    // load tasks for the first time
+// load tasks for the first time
 loadTasks();
